@@ -17,9 +17,9 @@ public class OldFormatCommandScopesRepositoryTest {
 
         List<CommandScope> scopes = commandScopes.unmodifiableListCommandScopes();
 
-        assertEquals(2, scopes.size());
+        assertEquals(1, scopes.size());
         CommandScope commandScope = scopes.get(0);
-        assertEquals(new Long(3), commandScope.id());
-        assertEquals("Bash -> Объединение выражений", commandScope.name());
+        assertEquals(new Long(8), commandScope.id());
+        assertEquals("Bash -> Выражения для проверки строк", commandScope.name());
     }
 }
