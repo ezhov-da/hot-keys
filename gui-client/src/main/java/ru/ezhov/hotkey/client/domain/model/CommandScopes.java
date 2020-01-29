@@ -13,7 +13,17 @@ public class CommandScopes {
     }
 
     public static CommandScopes from(List<CommandScope> commandScopes) {
-        return new CommandScopes(commandScopes);
+        List<CommandScope> scopes = new ArrayList<>(commandScopes);
+        scopes.sort(new CommandScopeComparator());
+
+        return new CommandScopes(scopes);
+    }
+
+    public void addNewCommandScope(NewCommandScope newCommandScope) {
+
+
+        this.commandScopes.add(CommandScope.create(newCommandScope));
+        commandScopes.sort(new CommandScopeComparator());
     }
 
     public List<CommandScope> unmodifiableListCommandScopes() {

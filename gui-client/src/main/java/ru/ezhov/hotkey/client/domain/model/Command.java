@@ -11,16 +11,11 @@ public class Command {
         this.description = description;
     }
 
-    public Command() {
-    }
-
     public static Command from(Long id, String name, String description) {
         return new Command(id, name, description);
     }
 
-    public static Command empty() {
-        return new Command();
-    }
+
 
     public Long id() {
         return id;

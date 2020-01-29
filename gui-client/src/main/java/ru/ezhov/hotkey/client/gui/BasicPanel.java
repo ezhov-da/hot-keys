@@ -6,7 +6,9 @@ import ru.ezhov.hotkey.client.domain.model.CommandScopesRepositoryException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -32,7 +34,9 @@ public class BasicPanel extends JPanel {
     private CommandScopePanel commandScopePanel;
     private JSplitPane splitPane = new JSplitPane();
 
-    public BasicPanel(CommandScopesRepository commandScopesRepository) throws CommandScopesRepositoryException {
+    private ImportDialog importDialog;
+
+    public BasicPanel(JFrame parent, CommandScopesRepository commandScopesRepository) throws CommandScopesRepositoryException {
         super(new BorderLayout());
 
         this.commandScopesRepository = commandScopesRepository;
@@ -60,7 +64,59 @@ public class BasicPanel extends JPanel {
         commandScopePanel = new CommandScopePanel();
 
         splitPane.setLeftComponent(commandScopePanel);
+        splitPane.setRightComponent(new JPanel());
 
+        JToolBar basicToolbar = new JToolBar();
+        basicToolbar.setFloatable(false);
+
+        importDialog = new ImportDialog(parent);
+        importDialog.addImportCallback(newCommandScope -> {
+            SwingUtilities.invokeLater(() -> {
+                commandScopeListModel.add(newCommandScope);
+                importDialog.setVisible(false);
+            });
+        });
+
+        basicToolbar.add(new AbstractAction() {
+            {
+                putValue(Action.NAME, "Import");
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+
+                    CommandScope value = commandScopeJList.getSelectedValue();
+                    if (value != null) {
+                        importDialog.showImport(value.name());
+                    } else {
+                        importDialog.showImport("");
+                    }
+                });
+            }
+        });
+
+        basicToolbar.add(new AbstractAction() {
+            {
+                putValue(Action.NAME, "Save");
+            }
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        commandScopesRepository.save(commandScopeListModel.getCommandScopes());
+                        JOptionPane.showMessageDialog(parent, "Saved");
+                    } catch (CommandScopesRepositoryException ex) {
+                        JOptionPane.showMessageDialog(parent, ex.getMessage());
+                        ex.printStackTrace();
+                    }
+                });
+            }
+        });
+
+
+        this.add(basicToolbar, BorderLayout.NORTH);
         this.add(splitPane, BorderLayout.CENTER);
     }
 
@@ -81,26 +137,26 @@ public class BasicPanel extends JPanel {
             toolBar = new JToolBar(JToolBar.VERTICAL);
             toolBar.setFloatable(false);
             this.add(toolBar, BorderLayout.WEST);
-            toolBar.add(new AbstractAction() {
-                {
-                    putValue(Action.NAME, "+");
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });
-            toolBar.add(new AbstractAction() {
-                {
-                    putValue(Action.NAME, "-");
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });
+//            toolBar.add(new AbstractAction() {
+//                {
+//                    putValue(Action.NAME, "+");
+//                }
+//
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//
+//                }
+//            });
+//            toolBar.add(new AbstractAction() {
+//                {
+//                    putValue(Action.NAME, "-");
+//                }
+//
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//
+//                }
+//            });
 
             this.add(new JScrollPane(commandScopeJList), BorderLayout.CENTER);
         }
@@ -132,16 +188,16 @@ public class BasicPanel extends JPanel {
                     SwingUtilities.invokeLater(commandScopeTableModel::addNewCommand);
                 }
             });
-            toolBar.add(new AbstractAction() {
-                {
-                    putValue(Action.NAME, "-");
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                }
-            });
+//            toolBar.add(new AbstractAction() {
+//                {
+//                    putValue(Action.NAME, "-");
+//                }
+//
+//                @Override
+//                public void actionPerformed(ActionEvent e) {
+//
+//                }
+//            });
 
 
             this.table = new JTable();

@@ -1,16 +1,15 @@
 package ru.ezhov.hotkey.client.gui;
 
 import ru.ezhov.hotkey.client.domain.model.CommandScopesRepository;
+import ru.ezhov.hotkey.client.domain.model.CommandScopesRepositoryException;
 import ru.ezhov.hotkey.client.infrastructure.OldFormatCommandScopesRepository;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class Application {
 
@@ -22,15 +21,15 @@ public class Application {
             } catch (Throwable ex) {
                 //
             }
-            JFrame frame = new JFrame("Hot-Keys editor");
+            try {
+                JFrame frame = new JFrame("HoKo editor");
 
-            try (InputStream stream = new FileInputStream(new File("hot-keys.json"));) {
-                byte[] b = new byte[stream.available()];
-                stream.read(b);
+                frame.setIconImage(new ImageIcon(Application.class.getResource("/text-editor_24x24.png")).getImage());
 
-                CommandScopesRepository commandScopesRepository = new OldFormatCommandScopesRepository(new String(b, StandardCharsets.UTF_8));
+                CommandScopesRepository commandScopesRepository = new OldFormatCommandScopesRepository(new File("hot-keys.json"));
 
-                BasicPanel basicPanel = new BasicPanel(commandScopesRepository);
+                BasicPanel basicPanel = null;
+                basicPanel = new BasicPanel(frame, commandScopesRepository);
 
                 frame.add(basicPanel, BorderLayout.CENTER);
 
@@ -38,7 +37,7 @@ public class Application {
                 frame.setLocationRelativeTo(null);
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
-            } catch (Exception e) {
+            } catch (CommandScopesRepositoryException e) {
                 e.printStackTrace();
             }
         });

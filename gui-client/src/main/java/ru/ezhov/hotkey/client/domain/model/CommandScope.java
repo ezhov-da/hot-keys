@@ -2,6 +2,7 @@ package ru.ezhov.hotkey.client.domain.model;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandScope {
     private Long id;
@@ -19,6 +20,15 @@ public class CommandScope {
         return new CommandScope(id, name, commands);
     }
 
+    public static CommandScope create(NewCommandScope newCommandScope) {
+        List<Command> commands = newCommandScope
+                .unmodifiableListCommands()
+                .stream().map(ncs -> Command.from(-1L, ncs.name(), ncs.description()))
+                .collect(Collectors.toList());
+
+        return new CommandScope(-1L, newCommandScope.name(), commands);
+    }
+
     public Long id() {
         return id;
     }
@@ -31,7 +41,7 @@ public class CommandScope {
         return Collections.unmodifiableList(commands);
     }
 
-    public void newCommand() {
-        commands.add(Command.empty());
+    public void newEmptyCommand() {
+        commands.add(Command.from(-1L, "", ""));
     }
 }

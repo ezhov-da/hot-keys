@@ -24,13 +24,13 @@ public class CommandScopeTableModel extends AbstractTableModel {
     }
 
     public void addNewCommand() {
-        commandScope.newCommand();
+        commandScope.newEmptyCommand();
         this.fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
     //TODO: сделать удаление строки
     public void deleteSelectedCommand() {
-        commandScope.newCommand();
+        commandScope.newEmptyCommand();
         this.fireTableRowsUpdated(getRowCount() - 1, getRowCount() - 1);
     }
 
